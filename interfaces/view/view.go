@@ -15,6 +15,7 @@ type view struct {
 	list     *tview.List
 	textview *tview.TextView
 	app      *tview.Application
+	articles domain.Articles
 }
 
 func NewView() *view {
@@ -27,14 +28,16 @@ func NewView() *view {
 }
 
 func (v *view) AddArticles(articles domain.Articles) {
+	v.articles = articles
 	v.list.AddItem("quit", "Press to quit.", 'q', func() { v.app.Stop() })
-	for _, a := range articles {
-		v.list.AddItem(a.Title, a.PublishedAt, 's', func() {
+	for _, a := range v.articles {
+		v.list.AddItem(a.Title, a.PublishedAt, 's', func() {})
+		v.list.SetSelectedFunc(func(i int, _ string, _ string, _ rune) {
 			v.textview.Clear()
 			if len(a.Content) != 0 {
-				v.textview.SetText(a.Content)
+				v.textview.SetText(v.articles[i].Content)
 			} else {
-				v.textview.SetText(a.Description)
+				v.textview.SetText(v.articles[i].Description)
 			}
 		})
 	}

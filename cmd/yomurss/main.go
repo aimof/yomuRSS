@@ -64,7 +64,7 @@ func tui() {
 		log.Println("No article file.")
 		os.Exit(1)
 	}
-	f, err := os.Open("./articles/" + files[len(files)-1].Name())
+	f, err := os.Open(yomudir + "/articles/" + files[len(files)-1].Name())
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
