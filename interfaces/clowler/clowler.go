@@ -29,6 +29,9 @@ func NewClowler(tu domain.TargetURL) *clowler {
 
 func (c *clowler) GetArticles() (domain.Articles, error) {
 	for _, url := range c.targetURL {
+		if url == "" {
+			continue
+		}
 		resp, err := http.Get(url)
 		if err != nil {
 			log.Printf("Could not read feed: %s", url)

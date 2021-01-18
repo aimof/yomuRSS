@@ -1,7 +1,12 @@
 package view
 
 import (
+	"bytes"
+	"io/ioutil"
+	"strings"
+
 	"github.com/aimof/yomuRSS/domain"
+	"github.com/mattn/godown"
 	"github.com/rivo/tview"
 )
 
@@ -34,8 +39,19 @@ func (v *view) AddArticles(articles domain.Articles) {
 		v.list.AddItem(a.Title, a.PublishedAt, 's', func() {})
 		v.list.SetSelectedFunc(func(i int, _ string, _ string, _ rune) {
 			v.textview.Clear()
-			if len(a.Content) != 0 {
-				v.textview.SetText(v.articles[i].Content)
+			if len(v.articles[i].Content) != 0 {
+				b := make([]byte, 0, 10000)
+				buf := bytes.NewBuffer(b)
+				err := godown.Convert(buf, strings.NewReader(v.articles[i].Content), nil)
+				if err != nil {
+					v.textview.SetText(v.articles[i].Content)
+					return
+				}
+				md, err := ioutil.ReadAll(buf)
+				if err != nil {
+					v.textview.SetText(v.articles[i].Content)
+				}
+				v.textview.SetText(string(md))
 			} else {
 				v.textview.SetText(v.articles[i].Description)
 			}
